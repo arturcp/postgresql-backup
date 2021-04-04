@@ -1,4 +1,5 @@
 require_relative '../tools/disclaimer'
+require_relative '../tools/terminal'
 require 'tty-prompt'
 require 'tty-spinner'
 require 'pastel'
@@ -13,11 +14,10 @@ namespace :postgresql_backup do
 
     pastel = Pastel.new
     prompt = TTY::Prompt.new
-    spinner = TTY::Spinner.new("#{pastel.yellow("[:spinner] ")}Loading ...")
 
-    spinner.auto_spin
-    sleep(2) # Perform task
-    spinner.success(pastel.green.bold("success"))
+    Tools::Terminal.spinner("#{pastel.yellow("[:spinner] ")}Loading ...", pastel.green.bold("done.")) do
+      sleep(2) # Perform task
+    end
 
     prompt.select("Choose the file to restore?", %w(file1 file2 file3))
   end
