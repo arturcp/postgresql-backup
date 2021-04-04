@@ -64,6 +64,11 @@ PostgresqlBackup.configure do |config|
   # is `us-east-1`. It will also be ignored unless the repository
   # is set to S3.
   config.region = ''
+
+  # Backup files are created using a pattern made by the current date
+  # and time. If you want to add a sufix to the files, change this
+  # attribute.
+  config.file_suffix = ''
 end
 ```
 
