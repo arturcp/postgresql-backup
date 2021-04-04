@@ -1,7 +1,13 @@
 class PostgresqlBackup
   require_relative 'railtie' if defined?(Rails)
 
-  def self.hello
-    puts "Hello world!"
+  class << self
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield(configuration)
+    end
   end
 end
