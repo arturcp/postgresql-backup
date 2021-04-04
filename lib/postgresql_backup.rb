@@ -1,3 +1,5 @@
+require_relative 'configuration'
+
 class PostgresqlBackup
   require_relative 'railtie' if defined?(Rails)
 

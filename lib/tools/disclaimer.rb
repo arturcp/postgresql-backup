@@ -1,3 +1,5 @@
+require 'pastel'
+
 module Tools
   class Disclaimer
     def initialize(columns: 80, horizontal_character: '=', vertical_character: '|')
@@ -23,7 +25,7 @@ module Tools
     # |  officia ex amet incididunt.         |
     # |                                      |
     # ========================================
-    def show(title:, text:)
+    def show(title:, texts: [])
       puts ''
       puts horizontal_character * columns
       puts empty_line
@@ -31,11 +33,15 @@ module Tools
       puts empty_line
       puts horizontal_character * columns
       puts empty_line
-      paragraphs = break_text_into_paragraphs(text)
-      paragraphs.each do |text|
-        puts left_aligned_text(text)
+
+      Array(texts).each do |text|
+        paragraphs = break_text_into_paragraphs(text)
+        paragraphs.each do |text|
+          puts left_aligned_text(text)
+        end
       end
       puts empty_line
+
       puts horizontal_character * columns
       puts ''
     end
@@ -51,7 +57,7 @@ module Tools
     # including the vertical characters to close the
     # disclaimer box.
     def empty_line
-      spaces = ' ' * (columns - 2 * vertical_character.length)
+      spaces = ' ' * (columns - 2 * length_of(vertical_character))
 
       [
         vertical_character,
@@ -73,7 +79,7 @@ module Tools
     # Return a string with a centralized text inside the disclaimer
     # box.
     def centralized_text(text)
-      gap = (columns - text.length - 2 * vertical_character.length) / 2
+      gap = (columns - length_of(text) - 2 * length_of(vertical_character)) / 2
       spaces = ' ' * gap
 
       [
@@ -97,7 +103,7 @@ module Tools
     def left_aligned_text(text)
       stripped_text = text.strip
       spaces_around_text = 2
-      gap = (columns - 2 * spaces_around_text - 2 * vertical_character.length) - stripped_text.length
+      gap = (columns - 2 * spaces_around_text - 2 * length_of(vertical_character)) - length_of(stripped_text)
       spaces = ' ' * gap
 
       [
@@ -137,7 +143,8 @@ module Tools
     #
     # Returns either one blank space or an empty space.
     def extra_space(text)
-      if (text.length.odd? && columns.even?) || (text.length.even? && columns.odd?)
+      text_length = length_of(text)
+      if (text_length.odd? && columns.even?) || (text_length.even? && columns.odd?)
         ' '
       else
         ''
@@ -153,17 +160,26 @@ module Tools
       paragraphs = []
       position = 0
       spaces_around_text = 2
-      paragraph_max_size = columns - 2 * spaces_around_text - 2 * vertical_character.length
+      paragraph_max_size = columns - 2 * spaces_around_text - 2 * length_of(vertical_character)
+      text_length = length_of(text)
 
       loop do
-        break paragraphs if position == text.size
+        break paragraphs if position == text_length
 
         match = text.match(/.{1,#{paragraph_max_size}}(?=[ ]|\z)|.{,#{paragraph_max_size-1}}[ ]/, position)
         return nil if match.nil?
 
         paragraphs << match[0]
-        position += match[0].size
+        position += length_of(match[0])
       end
+    end
+
+    def length_of(text)
+      pastel.undecorate(text).map { |part| part[:text] }.join.length
+    end
+
+    def pastel
+      @pastel ||= Pastel.new
     end
   end
 end

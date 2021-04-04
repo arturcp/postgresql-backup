@@ -69,6 +69,11 @@ PostgresqlBackup.configure do |config|
   # and time. If you want to add a sufix to the files, change this
   # attribute.
   config.file_suffix = ''
+
+  # If you use S3 to upload the backup files, you need to provide a
+  # path where they are going to be stored. The remote path is the
+  # place to do that. The default value is `_backups/database/`
+  config.remote_path = ''
 end
 ```
 
@@ -82,16 +87,17 @@ bundle exec rake postgresql_backup:dump
 
 However, you can set (or override) a few things when executing the rake:
 
-- repository: `REPOSITORY='File System' bundle exec rake postgresql_backup:dump`
-- bucket: `BUCKET='my-bucket' bundle exec rake postgresql_backup:dump`
-- region: `REGION='us-east-1' bundle exec rake postgresql_backup:dump`
+- repository: `BKP_REPOSITORY='File System' bundle exec rake postgresql_backup:dump`
+- bucket: `BKP_BUCKET='my-bucket' bundle exec rake postgresql_backup:dump`
+- region: `BKP_REGION='us-east-1' bundle exec rake postgresql_backup:dump`
+- remote_path: `BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump`
 
 Be aware that, if the gem is configured to use the file system and you force the task to use S3, AWS related attributes must be set, like the access key and the secret key.
 
-You can combine the variables above any way you want:
+You can combine these variables above any way you want:
 
 ```
-REPOSITORY='S3' BUCKET='my-bucket' REGION='us-east-1' bundle exec rake postgresql_backup:dump
+BKP_REPOSITORY='S3' BKP_BUCKET='my-bucket' BKP_REGION='us-east-1' BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump
 ```
 
 Important note: config/database.yml is used for database configuration,
@@ -113,14 +119,15 @@ REPOSITORY='S3' S3_BUCKET_NAME='my-bucket' bundle exec rake db:restore
 
 Again, you can use these environment variables:
 
-- repository: `REPOSITORY='File System' bundle exec rake postgresql_backup:restore`
-- bucket: `BUCKET='my-bucket' bundle exec rake postgresql_backup:restore`
-- region: `REGION='us-east-1' bundle exec rake postgresql_backup:restore`
+- repository: `BKP_REPOSITORY='File System' bundle exec rake postgresql_backup:restore`
+- bucket: `BKP_BUCKET='my-bucket' bundle exec rake postgresql_backup:restore`
+- region: `BKP_REGION='us-east-1' bundle exec rake postgresql_backup:restore`
+- remote_path: `BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump`
 
 Or make any combination you want with them:
 
 ```
-REPOSITORY='S3' BUCKET='my-bucket' REGION='us-east-1' bundle exec rake postgresql_backup:restore
+BKP_REPOSITORY='S3' BKP_BUCKET='my-bucket' BKP_REGION='us-east-1' BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:restore
 ```
 
 This is useful when you are trying to restore a production database into your local machine. Even though you configured the gem to use a development bucket, it is necessary to read the backup file from a production bucket.
