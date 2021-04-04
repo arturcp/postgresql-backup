@@ -18,14 +18,39 @@ namespace :postgresql_backup do
     Tools::Terminal.spinner('Backing up database') { file_path = db.dump }
 
     if configuration.s3?
-      Tools::Terminal.spinner('Uploading file') { storage.upload(file_path, configuration.remote_path) }
+      Tools::Terminal.spinner('Uploading file') { storage.upload(file_path) }
       Tools::Terminal.spinner('Deleting local file') { File.delete(file_path) }  if File.exist?(file_path)
     end
 
     puts ''
     puts pastel.green('All done.')
+  end
 
-    # prompt.select("Choose the file to restore?", %w(file1 file2 file3))
+  desc 'Restores a database backup into the database'
+  task restore: :environment do
+    title = pastel.green('POSTGRESQL DATABASE RESTORE')
+    text = 'Let\'s get your data back. You will be prompted to choose the file to restore, but that\'s all, you can leave the rest to us. Here is the current configuration for this restore:'
+    texts = [text, ' ', configuration_to_text].flatten
+    disclaimer.show(title: title, texts: texts)
+    files = []
+
+    Tools::Terminal.spinner('Loading backups list') { files = list_backup_files }
+    puts ''
+
+    file_name = prompt.select("Choose the file to restore", files)
+
+    puts ''
+
+    if configuration.s3?
+      Tools::Terminal.spinner('Downloading file') { storage.download(file_name) }
+    end
+
+    db.reset
+
+    Tools::Terminal.spinner('Restoring data') { db.restore(file_name) }
+
+    puts ''
+    puts pastel.green('All done.')
   end
 
   private
@@ -76,5 +101,12 @@ namespace :postgresql_backup do
     return if value.empty?
 
     "* #{pastel.yellow.bold(text)}: #{value}"
+  end
+
+  def list_backup_files
+    @list_backup_files ||= begin
+      source = configuration.s3? ? storage : db
+      source.list_files
+    end
   end
 end
