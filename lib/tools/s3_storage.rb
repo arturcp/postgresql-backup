@@ -76,6 +76,8 @@ module Tools
         body = file_body(file_from_storage)
         local_file.write(body)
       end
+
+      local_file_path
     end
 
     private

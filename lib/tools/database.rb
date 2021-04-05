@@ -39,9 +39,10 @@ module Tools
     # If you need to make the command more verbose, pass
     # `debug: true` in the arguments of the function.
     def restore(file_name, debug: false)
-      full_path = "#{backup_folder}/#{file_name}",
-      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{full_path}' -p '#{port}'"
-      debug ? system(cmd) : system(cmd, err: File::NULL)
+      full_path = "#{backup_folder}/#{file_name}"
+      output_redirection = debug ? '': '> /dev/null'
+      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{full_path}' -p '#{port}' #{output_redirection}"
+      system(cmd)
     end
 
     # List all backup files from the local backup folder.

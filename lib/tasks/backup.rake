@@ -13,9 +13,8 @@ namespace :postgresql_backup do
     text = 'You are about to backup your database. Relax on your seat, this process is usually fast and you don\'t need to do anything except wait for the process to end. Here is the current configuration for this backup:'
     texts = [text, ' ', configuration_to_text].flatten
     disclaimer.show(title: title, texts: texts)
-    file_path = ''
 
-    Tools::Terminal.spinner('Backing up database') { file_path = db.dump }
+    file_path = Tools::Terminal.spinner('Backing up database') { db.dump }
 
     if configuration.s3?
       Tools::Terminal.spinner('Uploading file') { storage.upload(file_path) }
@@ -32,25 +31,34 @@ namespace :postgresql_backup do
     text = 'Let\'s get your data back. You will be prompted to choose the file to restore, but that\'s all, you can leave the rest to us. Here is the current configuration for this restore:'
     texts = [text, ' ', configuration_to_text].flatten
     disclaimer.show(title: title, texts: texts)
-    files = []
+    local_file_path = ''
 
-    Tools::Terminal.spinner('Loading backups list') { files = list_backup_files }
-    puts ''
+    files = Tools::Terminal.spinner('Loading backups list') { list_backup_files }
 
-    file_name = prompt.select("Choose the file to restore", files)
+    if files.present?
+      puts ''
+      file_name = prompt.select("Choose the file to restore", files)
+      puts ''
 
-    puts ''
+      if configuration.s3?
+        local_file_path = Tools::Terminal.spinner('Downloading file') { storage.download(file_name) }
+      end
 
-    if configuration.s3?
-      Tools::Terminal.spinner('Downloading file') { storage.download(file_name) }
+      db.reset
+
+      Tools::Terminal.spinner('Restoring data') { db.restore(file_name) }
+
+      if configuration.s3?
+        Tools::Terminal.spinner('Deleting local file') { File.delete(local_file_path) }
+      end
+
+      puts ''
+      puts pastel.green('All done.')
+    else
+      spinner = TTY::Spinner.new("#{pastel.yellow("[:spinner] ")}Restoring data...")
+      error_message = "#{pastel.red.bold('failed')}. Backup files not found."
+      spinner.success(error_message)
     end
-
-    db.reset
-
-    Tools::Terminal.spinner('Restoring data') { db.restore(file_name) }
-
-    puts ''
-    puts pastel.green('All done.')
   end
 
   private
