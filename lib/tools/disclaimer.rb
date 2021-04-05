@@ -2,10 +2,11 @@ require 'pastel'
 
 module Tools
   class Disclaimer
-    def initialize(columns: 80, horizontal_character: '=', vertical_character: '|')
+    def initialize(columns: 80, horizontal_character: '=', vertical_character: '|', print_output: true)
       @columns = columns
       @horizontal_character = horizontal_character
       @vertical_character = vertical_character
+      @print_output = print_output
     end
 
     # Prints a box containing a title and an
@@ -25,26 +26,38 @@ module Tools
     # |  officia ex amet incididunt.         |
     # |                                      |
     # ========================================
-    def show(title:, texts: [])
-      puts ''
-      puts horizontal_character * columns
-      puts empty_line
-      puts centralized_text(title)
-      puts empty_line
-      puts horizontal_character * columns
-      puts empty_line
+    def show(title: nil, texts: [])
+      output = ['']
+
+      if title
+        output << horizontal_character * columns
+        output << empty_line
+        output << centralized_text(title)
+        output << empty_line
+      end
+
+      output << horizontal_character * columns
+      output << empty_line
 
       Array(texts).each do |text|
         paragraphs = break_text_into_paragraphs(text)
         paragraphs.each do |text|
-          puts left_aligned_text(text)
+          output << left_aligned_text(text)
         end
       end
-      puts empty_line
+      output << empty_line
 
-      puts horizontal_character * columns
-      puts ''
+      output << horizontal_character * columns
+      output << ''
+
+      output.each { |line| puts line } if print_output
+
+      output
     end
+
+    private
+
+    attr_reader :columns, :horizontal_character, :vertical_character, :print_output
 
     # Create an empty line to give visual space for the text
     # inside the disclaimer box.
@@ -115,10 +128,6 @@ module Tools
         vertical_character
       ].join
     end
-
-    private
-
-    attr_reader :columns, :horizontal_character, :vertical_character
 
     # When the differente between the number of columns and the lenght
     # of the text is odd, there will be a missing space to close the

@@ -10,6 +10,9 @@ Gem::Specification.new do |s|
     'https://rubygems.org/gems/postgresql-backup'
   s.license       = 'MIT'
 
+  # Development dependencies
+  s.add_development_dependency 'rspec'
+
   # Dependencies:
   s.add_dependency 'fog-aws'
   s.add_dependency 'pastel'
