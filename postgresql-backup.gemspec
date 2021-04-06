@@ -7,7 +7,6 @@ Gem::Specification.new do |s|
   s.email       = 'artur.prado@gmail.com'
   s.files       = `git ls-files -- lib/*`.split("\n")
   s.files       += %w[README.md]
-  s.files       = ["lib/postgresql_backup.rb", "lib/configuration.rb"]
   s.homepage    =
     'https://rubygems.org/gems/postgresql-backup'
   s.license       = 'MIT'
