@@ -2,10 +2,10 @@ PATH
   remote: .
   specs:
     postgresql-backup (0.0.1)
-      fog-aws
-      pastel
-      tty-prompt
-      tty-spinner
+      fog-aws (~> 3.10.0)
+      pastel (~> 0.8.0)
+      tty-prompt (~> 0.23.0)
+      tty-spinner (~> 0.9.3)
 
 GEM
   remote: https://rubygems.org/
@@ -74,7 +74,7 @@ PLATFORMS
 
 DEPENDENCIES
   postgresql-backup!
-  rspec
+  rspec (~> 3.10.0)
 
 BUNDLED WITH
    2.1.2
