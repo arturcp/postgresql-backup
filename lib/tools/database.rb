@@ -1,3 +1,5 @@
+require 'byebug'
+
 module Tools
   class Database
     def initialize(configuration)
@@ -11,16 +13,12 @@ module Tools
     #
     # Return the full path of the backup file created in the disk.
     def dump(debug: false)
-      full_path = [
-        "#{backup_folder}/#{Time.current.strftime('%Y%m%d%H%M%S')}",
-        file_suffix,
-        '.sql'
-      ].join
+      file_path = File.join(backup_folder, "#{file_name}#{file_suffix}.sql")
 
-      cmd = "PGPASSWORD='#{password}' pg_dump -F p -v -O -U '#{user}' -h '#{host}' -d '#{database}' -f '#{full_path}' -p '#{port}' "
+      cmd = "PGPASSWORD='#{password}' pg_dump -F p -v -O -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' "
       debug ? system(cmd) : system(cmd, err: File::NULL)
 
-      full_path
+      file_path
     end
 
     # Drop the database and recreate it.
@@ -38,10 +36,12 @@ module Tools
     # If you need to make the command more verbose, pass
     # `debug: true` in the arguments of the function.
     def restore(file_name, debug: false)
-      full_path = "#{backup_folder}/#{file_name}"
-      output_redirection = debug ? '': '> /dev/null'
-      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{full_path}' -p '#{port}' #{output_redirection}"
+      file_path = File.join(backup_folder, file_name)
+      output_redirection = debug ? '': ' > /dev/null'
+      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' #{output_redirection}"
       system(cmd)
+
+      file_path
     end
 
     # List all backup files from the local backup folder.
@@ -58,23 +58,27 @@ module Tools
     attr_reader :configuration
 
     def host
-      @host ||= ActiveRecord::Base.connection_config[:host]
+      @host ||= ::ActiveRecord::Base.connection_config[:host]
     end
 
     def port
-      @port ||= ActiveRecord::Base.connection_config[:port]
+      @port ||= ::ActiveRecord::Base.connection_config[:port]
     end
 
     def database
-      @database ||= ActiveRecord::Base.connection_config[:database]
+      @database ||= ::ActiveRecord::Base.connection_config[:database]
     end
 
     def user
-      ActiveRecord::Base.connection_config[:username]
+      ::ActiveRecord::Base.connection_config[:username]
     end
 
     def password
-      @password ||= ActiveRecord::Base.connection_config[:password]
+      @password ||= ::ActiveRecord::Base.connection_config[:password]
+    end
+
+    def file_name
+      @file_name ||= Time.current.strftime('%Y%m%d%H%M%S')
     end
 
     def file_suffix
