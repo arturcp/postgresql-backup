@@ -31,9 +31,8 @@ module Tools
     def upload(file_path, tags = '')
       file_name = Pathname.new(file_path).basename
 
-      directory = s3.directories.new(key: bucket)
-      directory.files.create(
-        key: "#{remote_path}/#{file_name}",
+      remote_file.create(
+        key: File.join(remote_path, file_name),
         body: File.open(file_path),
         tags: tags
       )
@@ -45,22 +44,15 @@ module Tools
     #
     # Return an array of strings, containing only the file name.
     def list_files
-      directory = s3.directories.get(bucket, prefix: remote_path)
-      files = directory.files.map { |file| file.key }
+      files = remote_directory.files.map { |file| file.key }
 
       # The first item in the array is only the path an can be discarded.
       files = files.slice(1, files.length - 1) || []
 
       files
-        .map { |file| Pathname.new(file).basename }
+        .map { |file| Pathname.new(file).basename.to_s }
         .sort
         .reverse
-    end
-
-    # Get a specific file from the bucket's remote path.
-    def get_file(file_name)
-      directory = s3.directories.get(bucket, prefix: remote_path)
-      directory.files.get("#{remote_path}/#{file_name}")
     end
 
     # Create a local file with the contents of the remote file.
@@ -68,14 +60,13 @@ module Tools
     # The new file will be saved in the `backup_folder` that was set
     # in the configuration (the default value is `db/backups`)
     def download(file_name)
-      file_from_storage = get_file(file_name)
-      local_file_path = "#{backup_folder}/#{file_name}"
+      remote_file_path = File.join(remote_path, file_name)
+      local_file_path = File.join(backup_folder, file_name)
+
+      file_from_storage = remote_directory.files.get(remote_file_path)
 
       prepare_local_folder(local_file_path)
-      File.open(local_file_path, 'w') do |local_file|
-        body = file_body(file_from_storage)
-        local_file.write(body)
-      end
+      create_local_file(local_file_path, file_from_storage)
 
       local_file_path
     end
@@ -110,11 +101,26 @@ module Tools
       @backup_folder ||= configuration.backup_folder
     end
 
+    def remote_directory
+      @remote_directory ||= s3.directories.get(bucket, prefix: remote_path)
+    end
+
+    def remote_file
+      @remote_file ||= s3.directories.new(key: bucket).files
+    end
+
     # Make sure the path exists and that there are no files with
     # the same name of the one that is being downloaded.
     def prepare_local_folder(local_file_path)
       FileUtils.mkdir_p(backup_folder)
       File.delete(local_file_path) if File.exist?(local_file_path)
+    end
+
+    def create_local_file(local_file_path, file_from_storage)
+      File.open(local_file_path, 'w') do |local_file|
+        body = file_body(file_from_storage)
+        local_file.write(body)
+      end
     end
   end
 end
