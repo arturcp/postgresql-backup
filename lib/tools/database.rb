@@ -30,8 +30,7 @@ module Tools
     # * rake db:drop
     # * rake db:create
     def reset
-      Rake::Task['db:drop'].invoke
-      Rake::Task['db:create'].invoke
+      system('bundle exec rake db:drop db:create')
     end
 
     # Restore the database from a file in the file system.

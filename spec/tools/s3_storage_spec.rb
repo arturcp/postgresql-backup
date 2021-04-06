@@ -1,5 +1,5 @@
 require_relative '../../lib/tools/s3_storage'
-require_relative '../configuration_spec'
+require_relative '../../lib/configuration'
 
 RSpec.describe Tools::S3Storage do
   let(:remote_path) { 'db/data' }
