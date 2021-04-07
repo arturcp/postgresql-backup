@@ -8,9 +8,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/arturcp/postgresql-backup'
   s.files       = `git ls-files -- lib/*`.split("\n")
   s.files       += %w[README.md CHANGELOG.md]
-  s.homepage    =
-    'https://rubygems.org/gems/postgresql-backup'
-  s.license       = 'MIT'
+  s.license     = 'MIT'
 
   # Development dependencies
   s.add_development_dependency 'rspec', '~> 3.10.0'
