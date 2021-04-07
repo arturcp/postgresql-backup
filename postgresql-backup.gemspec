@@ -7,13 +7,14 @@ Gem::Specification.new do |s|
   s.email       = 'artur.prado@gmail.com'
   s.homepage    = 'https://github.com/arturcp/postgresql-backup'
   s.files       = `git ls-files -- lib/*`.split("\n")
-  s.files       += %w[README.md]
+  s.files       += %w[README.md CHANGELOG.md]
   s.homepage    =
     'https://rubygems.org/gems/postgresql-backup'
   s.license       = 'MIT'
 
   # Development dependencies
   s.add_development_dependency 'rspec', '~> 3.10.0'
+  s.add_development_dependency 'bump', '~> 0.8.0'
 
   # Dependencies:
   s.add_dependency 'fog-aws', '~> 3.10.0'
