@@ -1,0 +1,4 @@
+#!/bin/bash
+
+bump minor --tag
+gem push postgresql-backup.gemspec
