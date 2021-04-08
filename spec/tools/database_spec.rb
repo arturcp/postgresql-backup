@@ -1,3 +1,4 @@
+require_relative '../spec_helper'
 require_relative '../../lib/tools/database'
 require_relative '../../lib/configuration'
 
