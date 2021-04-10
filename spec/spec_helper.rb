@@ -1,4 +1,6 @@
-require 'bundler/setup'
-Bundler.setup
+require 'simplecov'
 
-require 'postgresql-backup'
+SimpleCov.start do
+  add_filter "/spec/"
+  add_filter "/spec/tools/"
+end

@@ -11,8 +11,9 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   # Development dependencies
-  s.add_development_dependency 'rspec', '~> 3.10.0'
   s.add_development_dependency 'bump', '~> 0.8.0'
+  s.add_development_dependency 'rspec', '~> 3.10.0'
+  s.add_development_dependency 'simplecov', '~> 0.21.2'
 
   # Dependencies:
   s.add_dependency 'fog-aws', '~> 3.10.0'
