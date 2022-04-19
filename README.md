@@ -4,6 +4,14 @@ This gem automates PostgreSQL's backup and restore in your Rails project. It wil
 
 The current version supports ruby 3. If you need backward compatibiliy, use [v0.0.6](https://rubygems.org/gems/postgresql-backup/versions/0.0.6) instead.
 
+## How it looks like?
+
+Dump:
+![](https://res.cloudinary.com/ongmungazi/image/upload/v1650388791/ruby-gem/dump.gif)
+
+Restore:
+![](https://res.cloudinary.com/ongmungazi/image/upload/v1650388791/ruby-gem/restore.gif)
+
 ## Getting started
 
 Add the gem to your Rails project:
