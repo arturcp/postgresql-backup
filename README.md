@@ -2,6 +2,8 @@
 
 This gem automates PostgreSQL's backup and restore in your Rails project. It will inject two rake tasks that you can use to manage your data, either by using the local system or AWS S3 storage.
 
+The current version supports ruby 3. If you need backward compatibiliy, use [v0.0.6](https://rubygems.org/gems/postgresql-backup/versions/0.0.6) instead.
+
 ## Getting started
 
 Add the gem to your Rails project:
@@ -139,3 +141,19 @@ Important note: if you are trying to locally restore a backup that was created i
 Everything will work just fine, but you may come across some strange warnings, like when you try to drop the database: it will say you are droping a production database to double check if this is your intended purpose.
 
 To prevent this, every time the rake restores a backup file it tries to replace the environment being copied into the ar_internal_metadata table with the current Rails environment. Thus, `environment production` will become `environment development`.
+
+## I want to contribute
+
+Feel free to open a pull request with the changes you want to make. Remember to update `CHANGELOG.md` with the change you are proposing, because once the PR is merged, it is important to show which changes are being made to the gem.
+
+The first thing to do is to update the dependencies. If you do not have bundle installed, run `gem install bundler`. Then:
+
+```
+bundle install
+```
+
+To run the tests, we use rspec:
+
+```
+rspec
+```
