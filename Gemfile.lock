@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    postgresql-backup (0.0.6)
+    postgresql-backup (0.0.7)
       fog-aws (~> 3.13.0)
       pastel (~> 0.8.0)
       tty-prompt (~> 0.23.0)
@@ -34,8 +34,10 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
+    mini_portile2 (2.8.0)
     multi_json (1.15.0)
-    nokogiri (1.13.4-x86_64-darwin)
+    nokogiri (1.13.4)
+      mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     pastel (0.8.0)
       tty-color (~> 0.5)
