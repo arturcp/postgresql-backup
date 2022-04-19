@@ -57,23 +57,23 @@ module Tools
     attr_reader :configuration
 
     def host
-      @host ||= ::ActiveRecord::Base.connection_config[:host]
+      @host ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:host]
     end
 
     def port
-      @port ||= ::ActiveRecord::Base.connection_config[:port]
+      @port ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:port]
     end
 
     def database
-      @database ||= ::ActiveRecord::Base.connection_config[:database]
+      @database ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:database]
     end
 
     def user
-      ::ActiveRecord::Base.connection_config[:username]
+      ::ActiveRecord::Base.connection_db_config.configuration_hash[:username]
     end
 
     def password
-      @password ||= ::ActiveRecord::Base.connection_config[:password]
+      @password ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:password]
     end
 
     def file_name
