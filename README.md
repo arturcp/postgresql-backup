@@ -26,7 +26,13 @@ Go to the terminal and update your gems using bundler:
 bundle install
 ```
 
-Right now, your project already has two new rake tasks: `backup` and `restore`.
+In the Rakefile of your project, add `require 'postgresql_backup'` anywhere **before** this line:
+
+```
+Rails.application.load_tasks
+```
+
+Right now, your project already has two new rake tasks: `postgresql_backup:dump` and `postgresql_backup:restore`.
 
 ## Configuration
 
@@ -39,6 +45,8 @@ Create a file inside the `config/initializers` folder. The name is not important
 Here is an example with all available options you can change:
 
 ```ruby
+require 'postgresql_backup'
+
 PostgresqlBackup.configure do |config|
   # This gem works with two possible repositories:
   #
