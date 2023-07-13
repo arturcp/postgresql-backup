@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 puts 'Bumping patch and creating tag'
-system('bump patch --tag')
+system('bump patch --tag --tag-prefix ""')
 system('gem build postgresql-backup.gemspec')
 
 version = `bump current`.split(': ').last.chomp
