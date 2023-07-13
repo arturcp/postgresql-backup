@@ -1,3 +1,7 @@
+### v0.0.8 - 2023-07-07
+
+- Add support to hooks (methods to run before/after dump and restore)
+
 ### v0.0.7 - 2022-04-19
 
 - Add support for ruby 3 and fog-aws 3.13.0

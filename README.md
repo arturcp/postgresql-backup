@@ -92,6 +92,20 @@ PostgresqlBackup.configure do |config|
   # path where they are going to be stored. The remote path is the
   # place to do that. The default value is `_backups/database/`
   config.remote_path = ''
+
+  # There are cases where we need to run a command before or after the database
+  # is restored or a backup is created. To accomplish this, you can set the
+  # `hooks` attribute to a class or an instance of a class that
+  # responds to the method you need.
+  #
+  #  Available hook methods are:
+  #
+  #  * before_restore
+  #  * after_restore
+  #  * before_dump
+  #  * after_dump
+  #
+  config.hooks = nil
 end
 ```
 
@@ -157,6 +171,85 @@ Important note: if you are trying to locally restore a backup that was created i
 Everything will work just fine, but you may come across some strange warnings, like when you try to drop the database: it will say you are droping a production database to double check if this is your intended purpose.
 
 To prevent this, every time the rake restores a backup file it tries to replace the environment being copied into the ar_internal_metadata table with the current Rails environment. Thus, `environment production` will become `environment development`.
+
+## Database restore hooks
+
+Sometimes we need to run things every time a database restore is about to happen, or maybe after the restore is completed. You may even need to run code before or after a backup is created.
+
+For example, if you use Elasticsearch you may need to reindex it after restoring a database.
+
+To accomplish this, you can use the `hooks` configurations:
+
+Examples:
+
+```ruby
+class DatabaseBackupHooks
+  def before_restore
+    puts 'Backup is going to be restored...'
+  end
+
+  def after_restore
+    puts 'Backup restored!'
+  end
+
+  def before_dump
+    puts 'Database backup is about to be created...'
+  end
+
+  def after_dump
+    puts 'Dump created!'
+  end
+end
+```
+
+Then, you can set the `hooks` in the initializer:
+
+```ruby
+PostgresqlBackup.configure do |config|
+  config.hooks = DatabaseBackupHooks.new
+end
+```
+
+It also works with classes with class methods:
+
+```ruby
+class DatabaseBackupHooks
+  def self.before_restore
+    puts 'Backup is going to be restored...'
+  end
+
+  def self.after_restore
+    puts 'Backup restored!'
+  end
+
+  def self.before_dump
+    puts 'Database backup is about to be created...'
+  end
+
+  def self.after_dump
+    puts 'Dump created!'
+  end
+end
+
+```
+
+```ruby
+PostgresqlBackup.configure do |config|
+  config.hooks = DatabaseBackupHooks # Note that here we no longer instantiate the class
+end
+```
+
+You can even create a class on the fly:
+
+```ruby
+PostgresqlBackup.configure do |config|
+  config.hooks = Class.new do
+    def self.after_restore
+      puts "after restore hook"
+    end
+  end
+end
+```
 
 ## I want to contribute
 

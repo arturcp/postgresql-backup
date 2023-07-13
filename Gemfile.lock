@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    postgresql-backup (0.0.7)
+    postgresql-backup (0.0.8)
       fog-aws (~> 3.13.0)
       pastel (~> 0.8.0)
       tty-prompt (~> 0.23.0)
@@ -85,4 +85,4 @@ DEPENDENCIES
   simplecov (~> 0.21.2)
 
 BUNDLED WITH
-   2.3.11
+   2.4.15

@@ -1,4 +1,5 @@
 require_relative '../lib/configuration'
+require_relative '../lib/hooks'
 
 RSpec.describe Configuration do
   describe 'constructor' do
@@ -13,9 +14,12 @@ RSpec.describe Configuration do
       it { expect(subject.bucket).to be_empty }
       it { expect(subject.region).to be_empty }
       it { expect(subject.remote_path).to eq('_backups/database/') }
+      it { expect(subject.hooks).to be_a(Hooks) }
     end
 
     context 'with configuration values' do
+      let(:hooks) { double }
+
       subject do
         described_class.new(
           repository: 'repository',
@@ -25,7 +29,8 @@ RSpec.describe Configuration do
           aws_secret_access_key: 'aws_secret_access_key',
           bucket: 'bucket',
           region: 'region',
-          remote_path: 'remote_path'
+          remote_path: 'remote_path',
+          hooks: hooks,
         )
       end
 
@@ -37,6 +42,7 @@ RSpec.describe Configuration do
       it { expect(subject.bucket).to eq('bucket') }
       it { expect(subject.region).to eq('region') }
       it { expect(subject.remote_path).to eq('remote_path') }
+      it { expect(subject.hooks).to be_a(Hooks) }
     end
   end
 

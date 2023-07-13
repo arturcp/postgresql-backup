@@ -12,10 +12,14 @@ module Tools
     #
     # Return the full path of the backup file created in the disk.
     def dump(debug: false)
+      hooks.before_dump
+
       file_path = File.join(backup_folder, "#{file_name}#{file_suffix}.sql")
 
       cmd = "PGPASSWORD='#{password}' pg_dump -F p -v -O -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' "
       debug ? system(cmd) : system(cmd, err: File::NULL)
+
+      hooks.after_dump
 
       file_path
     end
@@ -35,10 +39,14 @@ module Tools
     # If you need to make the command more verbose, pass
     # `debug: true` in the arguments of the function.
     def restore(file_name, debug: false)
+      hooks.before_restore
+
       file_path = File.join(backup_folder, file_name)
       output_redirection = debug ? '': ' > /dev/null'
       cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' #{output_redirection}"
       system(cmd)
+
+      hooks.after_restore
 
       file_path
     end
@@ -91,6 +99,10 @@ module Tools
           FileUtils.mkdir_p(folder)
         end
       end
+    end
+
+    def hooks
+      @hooks ||= configuration.hooks
     end
   end
 end
